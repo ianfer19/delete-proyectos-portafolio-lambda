@@ -22,7 +22,7 @@ class ProjectRepository:
                     "projectId": project_id,
                     "name": project_name
                 },
-                ReturnValues="ALL_NEW"
+                ReturnValues="ALL_OLD"
             )
             print(f"DEBUG: DynamoDB delete response: {response}")
             return response.get('Attributes')
