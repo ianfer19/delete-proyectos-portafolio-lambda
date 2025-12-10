@@ -27,3 +27,19 @@ class ProjectRepository:
         except ClientError as e:
             print(f"Error deleting item: {e}")
             raise e
+
+    @classmethod
+    def get_project_by_id(cls, project_id):
+        """
+        Obtiene un proyecto por su projectId.
+        Dado que solo tenemos la PK, hacemos una Query.
+        """
+        try:
+            response = cls._table.query(
+                KeyConditionExpression=boto3.dynamodb.conditions.Key('projectId').eq(project_id)
+            )
+            items = response.get('Items', [])
+            return items[0] if items else None
+        except ClientError as e:
+            print(f"Error getting item: {e}")
+            raise e

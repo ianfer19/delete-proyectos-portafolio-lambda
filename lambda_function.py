@@ -9,28 +9,30 @@ def lambda_handler(event, context):
     print(f"Received event: {json.dumps(event)}")
 
     try:
-        # Obtener projectId de pathParameters o del body
+        # Obtener projectId de pathParameters
+        # API Gateway: /proyectos/{ProjectId}
         project_id = None
-        if event.get('pathParameters') and event['pathParameters'].get('id'):
-            project_id = event['pathParameters']['id']
+        if event.get('pathParameters') and event['pathParameters'].get('ProjectId'):
+            project_id = event['pathParameters']['ProjectId']
         
-        # Parsear body
-        body = {}
-        if event.get('body'):
-            if isinstance(event['body'], str):
-                body = json.loads(event['body'])
-            else:
-                body = event['body']
-
-        # Si no vino en pathParameters, intentar sacarlo del body
-        if not project_id:
-            project_id = body.get('projectId')
+        # Fallback: intentar por si viene como parameter lowercase o en el body (menos probable en DELETE standard)
+        if not project_id and event.get('pathParameters') and event['pathParameters'].get('id'):
+            project_id = event['pathParameters']['id']
 
         if not project_id:
-            return http_responses.bad_request("Falta el projectId (en pathParameters o body).")
+            # Intento desesperado de buscar en body si pathParameters fallo
+            if event.get('body'):
+                 try:
+                    body = json.loads(event['body']) if isinstance(event['body'], str) else event['body']
+                    project_id = body.get('projectId')
+                 except:
+                     pass
+
+        if not project_id:
+            return http_responses.bad_request("Falta el ProjectId en pathParameters.")
 
         # Llamar al servicio
-        deleted_project = ProjectService.delete_project(body)
+        deleted_project = ProjectService.delete_project(project_id)
 
         return http_responses.success(deleted_project)
 
