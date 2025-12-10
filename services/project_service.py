@@ -4,7 +4,7 @@ from repositories.project_repository import ProjectRepository
 
 class ProjectService:
     @staticmethod
-    def delete_project(project_id: str):
+    def delete_project(project_id: str, name: str):
         """
         Elimina un proyecto dado su ID.
         Busca el nombre (SK) usando el ID (PK) y luego elimina.
