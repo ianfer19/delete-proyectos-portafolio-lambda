@@ -28,5 +28,5 @@ jobs:
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
-            --function-name post-proyectos-portafolio-lambda \
+            --function-name delete-proyectos-portafolio-lambda \
             --zip-file fileb://function.zip
