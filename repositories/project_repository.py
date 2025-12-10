@@ -1,0 +1,29 @@
+import boto3
+import os
+from botocore.exceptions import ClientError
+
+
+class ProjectRepository:
+    _dynamodb = boto3.resource('dynamodb')
+    _table_name = os.environ.get('iam-portafolio-projects-pdn', 'iam-portafolio-projects-pdn')  # Default or env var
+    _table = _dynamodb.Table(_table_name)
+
+    @classmethod
+    def delete_project(cls, project_id, project_name):
+        """
+        Elimina un proyecto existente en DynamoDB.
+        Construye dinamicamente la UpdateExpression basada en los campos proporcionados.
+        """
+
+        try:
+            response = cls._table.delete_item(
+                Key={
+                    "projectId": project_id,
+                    "name": project_name
+                },
+                ReturnValues="ALL_NEW"
+            )
+            return response.get('Attributes')
+        except ClientError as e:
+            print(f"Error deleting item: {e}")
+            raise e
