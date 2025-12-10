@@ -32,6 +32,8 @@ def lambda_handler(event, context):
                  except:
                      pass
         
+        print(f"DEBUG: Extracted project_id: {project_id}")
+
         if not project_name:
             # Intento desesperado de buscar en body si pathParameters fallo
             if event.get('body'):
@@ -40,14 +42,19 @@ def lambda_handler(event, context):
                     project_name = body.get('name')
                  except:
                      pass
+        
+        print(f"DEBUG: Extracted project_name: {project_name}")
 
         if not project_id:
+            print("ERROR: Missing project_id")
             return http_responses.bad_request("Falta el ProjectId en pathParameters.")
 
         if not project_name:
+            print("ERROR: Missing project_name")
             return http_responses.bad_request("Falta el ProjectName en pathParameters.")
 
         # Llamar al servicio
+        print(f"DEBUG: Calling ProjectService.delete_project with id={project_id}, name={project_name}")
         deleted_project = ProjectService.delete_project(project_id, project_name)
 
         return http_responses.success(deleted_project)
