@@ -20,7 +20,12 @@ def lambda_handler(event, context):
             project_id = event['pathParameters']['id']
         
         project_name = None
-        if event.get('pathParameters') and event['pathParameters'].get('name'):
+        # Check for 'Name' (Capitalized) as per new route
+        if event.get('pathParameters') and event['pathParameters'].get('Name'):
+            project_name = event['pathParameters']['Name']
+        
+        # Fallback to lowercase 'name'
+        if not project_name and event.get('pathParameters') and event['pathParameters'].get('name'):
             project_name = event['pathParameters']['name']
 
         if not project_id:
